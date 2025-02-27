@@ -1,0 +1,6 @@
+@WB_labb3_API_new__HostAddress = http://localhost:5247
+
+GET {{WB_labb3_API_new__HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

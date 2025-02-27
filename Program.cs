@@ -121,6 +121,11 @@ namespace WB_labb3_API_new_
             //Post
             app.MapPost("/api/technologies", async (AppDbContext db, Technology tech) =>
             {
+                if (string.IsNullOrEmpty(tech.ImageUrl))
+                {
+                    tech.ImageUrl = "images/Default.png"; // standardbild
+                }
+                
                 db.Technologies.Add(tech);
 
                 await db.SaveChangesAsync();

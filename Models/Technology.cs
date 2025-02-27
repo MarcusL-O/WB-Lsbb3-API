@@ -6,5 +6,6 @@
         public string Name { get; set; }
         public int YearsOfExperience { get; set; }
         public string SkillLevel { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

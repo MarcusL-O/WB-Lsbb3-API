@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using WB_labb3_API_new_.Data;
 using WB_labb3_API_new_.Models;
@@ -29,6 +28,9 @@ namespace WB_labb3_API_new_
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Connection
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
 
             // Använd CORS-policy
@@ -48,7 +50,7 @@ namespace WB_labb3_API_new_
             // ------- Endpoints för Projects --------
 
             //Post
-            app.MapPost("/api/projects", async (Project project, AppDbContext db) =>
+            app.MapPost("/api/projects", async (AppDbContext db, Project project) =>
             {
                 db.Projects.Add(project);
                 await db.SaveChangesAsync();
@@ -61,7 +63,7 @@ namespace WB_labb3_API_new_
                 await db.Projects.ToListAsync());
 
             //GetById
-            app.MapGet("/api/projects/{id}", async (int id, AppDbContext db) =>
+            app.MapGet("/api/projects/{id}", async (AppDbContext db, int id) =>
             {
                 var project = await db.Projects.FindAsync(id);
 
@@ -74,7 +76,7 @@ namespace WB_labb3_API_new_
             });
 
             //Put
-            app.MapPut("/api/projects/{id}", async (int id, Project updatedProject, AppDbContext db) =>
+            app.MapPut("/api/projects/{id}", async (AppDbContext db, int id, Project updatedProject) =>
             {
                 var existingProject = await db.Projects.FindAsync(id);
 
@@ -93,7 +95,7 @@ namespace WB_labb3_API_new_
             });
 
             //Delete
-            app.MapDelete("/api/projects/{id}", async (int id, AppDbContext db) =>
+            app.MapDelete("/api/projects/{id}", async (AppDbContext db, int id) =>
             {
                 var project = await db.Projects.FindAsync(id);
 
@@ -111,7 +113,7 @@ namespace WB_labb3_API_new_
             // ------- Endpoints för Technology --------
 
             //Post
-            app.MapPost("/api/technologies", async (Technology tech, AppDbContext db) =>
+            app.MapPost("/api/technologies", async (AppDbContext db, Technology tech) =>
             {
                 db.Technologies.Add(tech);
 
@@ -124,7 +126,7 @@ namespace WB_labb3_API_new_
                 await db.Technologies.ToListAsync());
 
             //GetById
-            app.MapGet("/api/technologies/{id}", async (int id, AppDbContext db) =>
+            app.MapGet("/api/technologies/{id}", async (AppDbContext db,int id) =>
             {
                 var tech = await db.Technologies.FindAsync(id);
 
@@ -137,7 +139,7 @@ namespace WB_labb3_API_new_
             });
 
             //Put
-            app.MapPut("/api/technologies/{id}", async (int id, AppDbContext db, Technology updatedTech) =>
+            app.MapPut("/api/technologies/{id}", async (AppDbContext db, int id, Technology updatedTech) =>
             {
                 var existingTech = await db.Technologies.FindAsync(id);
 
@@ -156,7 +158,7 @@ namespace WB_labb3_API_new_
             });
 
             //Delete
-            app.MapDelete("/api/technologies/{id}", async (int id, AppDbContext db) =>
+            app.MapDelete("/api/technologies/{id}", async (AppDbContext db, int id) =>
             {
                 var tech = await db.Technologies.FindAsync(id);
 

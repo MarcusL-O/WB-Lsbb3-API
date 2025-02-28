@@ -53,65 +53,118 @@ namespace WB_labb3_API_new_
 
             app.UseAuthorization();
 
-            // ------- Endpoints för Projects --------
 
-            //Post
-            app.MapPost("/api/projects", async (AppDbContext db, Project project) =>
+            // ------- Endpoints för certifikat --------
+
+
+            // POST: Skapa ett nytt certifikat
+            app.MapPost("/api/certificates", async (AppDbContext db, Certificate certificate) =>
             {
-                db.Projects.Add(project);
+                db.Certificates.Add(certificate);
                 await db.SaveChangesAsync();
-
-                return Results.Ok(project);
+                return Results.Ok(certificate);
             });
 
-            //Get all
-            app.MapGet("/api/projects", async (AppDbContext db) =>
-                await db.Projects.ToListAsync());
+            // GET ALL: Hämta alla certifikat
+            app.MapGet("/api/certificates", async (AppDbContext db) =>
+                await db.Certificates.ToListAsync());
 
-            //GetById
-            app.MapGet("/api/projects/{id}", async (AppDbContext db, int id) =>
+            // GET BY ID: Hämta ett certifikat via id
+            app.MapGet("/api/certificates/{id}", async (AppDbContext db, int id) =>
             {
-                var project = await db.Projects.FindAsync(id);
+                var certificate = await db.Certificates.FindAsync(id);
+                if (certificate == null)
+                {
+                    return Results.NotFound();
+                }
+                return Results.Ok(certificate);
+            });
 
-                if (project == null)
+            // PUT: Uppdatera ett certifikat
+            app.MapPut("/api/certificates/{id}", async (AppDbContext db, int id, Certificate updatedCertificate) =>
+            {
+                var existingCertificate = await db.Certificates.FindAsync(id);
+                if (existingCertificate == null)
                 {
                     return Results.NotFound();
                 }
 
-                return Results.Ok(project);
-            });
-
-            //Put
-            app.MapPut("/api/projects/{id}", async (AppDbContext db, int id, Project updatedProject) =>
-            {
-                var existingProject = await db.Projects.FindAsync(id);
-
-                if (existingProject == null)
-                {
-                    return Results.NotFound();
-                }
-
-                existingProject.Title = updatedProject.Title;
-                existingProject.Description = updatedProject.Description;
-                existingProject.TechnologiesUsed = updatedProject.TechnologiesUsed;
+                existingCertificate.Title = updatedCertificate.Title;
+                existingCertificate.ImageUrl = updatedCertificate.ImageUrl;
+                existingCertificate.Status = updatedCertificate.Status;
+                existingCertificate.DateAchieved = updatedCertificate.DateAchieved;
+                existingCertificate.CredentialUrl = updatedCertificate.CredentialUrl;
 
                 await db.SaveChangesAsync();
-
-                return Results.Ok(updatedProject);
+                return Results.Ok(updatedCertificate);
             });
 
-            //Delete
-            app.MapDelete("/api/projects/{id}", async (AppDbContext db, int id) =>
+            // DELETE: Ta bort ett certifikat
+            app.MapDelete("/api/certificates/{id}", async (AppDbContext db, int id) =>
             {
-                var project = await db.Projects.FindAsync(id);
+                var certificate = await db.Certificates.FindAsync(id);
+                if (certificate == null)
+                {
+                    return Results.NotFound();
+                }
+                db.Certificates.Remove(certificate);
+                await db.SaveChangesAsync();
+                return Results.NoContent();
+            });
 
-                if (project == null)
+            // ------- Endpoints för erfarenhet --------
+
+
+            // POST: Skapa en ny erfarenhet
+            app.MapPost("/api/experiences", async (AppDbContext db, Experience experience) =>
+            {
+                db.Experiences.Add(experience);
+                await db.SaveChangesAsync();
+                return Results.Ok(experience);
+            });
+
+            // GET ALL: Hämta alla erfarenheter
+            app.MapGet("/api/experiences", async (AppDbContext db) =>
+                await db.Experiences.ToListAsync());
+
+            // GET BY ID: Hämta en erfarenhet via id
+            app.MapGet("/api/experiences/{id}", async (AppDbContext db, int id) =>
+            {
+                var experience = await db.Experiences.FindAsync(id);
+                if (experience == null)
+                {
+                    return Results.NotFound();
+                }
+                return Results.Ok(experience);
+            });
+
+            // PUT: Uppdatera en erfarenhet
+            app.MapPut("/api/experiences/{id}", async (AppDbContext db, int id, Experience updatedExperience) =>
+            {
+                var existingExperience = await db.Experiences.FindAsync(id);
+                if (existingExperience == null)
                 {
                     return Results.NotFound();
                 }
 
-                db.Projects.Remove(project);
+                existingExperience.Company = updatedExperience.Company;
+                existingExperience.Role = updatedExperience.Role;
+                existingExperience.Date = updatedExperience.Date;
+                existingExperience.ImageUrl = updatedExperience.ImageUrl;
 
+                await db.SaveChangesAsync();
+                return Results.Ok(updatedExperience);
+            });
+
+            // DELETE: Ta bort en erfarenhet
+            app.MapDelete("/api/experiences/{id}", async (AppDbContext db, int id) =>
+            {
+                var experience = await db.Experiences.FindAsync(id);
+                if (experience == null)
+                {
+                    return Results.NotFound();
+                }
+                db.Experiences.Remove(experience);
                 await db.SaveChangesAsync();
                 return Results.NoContent();
             });

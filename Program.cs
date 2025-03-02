@@ -28,15 +28,16 @@ namespace WB_labb3_API_new_
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // TEST Locla db 
+            /* TEST Locla db 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseInMemoryDatabase("TestDB"));
+            */
 
             //Connection
-            /* Denna ska var akvar sen mor in memeory databas
+            
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            */
+            
             var app = builder.Build();
 
             // Använd CORS-policy

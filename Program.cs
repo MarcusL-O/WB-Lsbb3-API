@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WB_labb3_API_new_.Data;
 using WB_labb3_API_new_.Models;
@@ -28,10 +29,7 @@ namespace WB_labb3_API_new_
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            /* TEST Locla db 
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseInMemoryDatabase("TestDB"));
-            */
+           
 
             //Connection
             
@@ -43,14 +41,16 @@ namespace WB_labb3_API_new_
             // Använd CORS-policy
             app.UseCors("AllowAll");
 
+           
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            
+               app.UseSwagger();
+               app.UseSwaggerUI();
+            
 
-            app.UseHttpsRedirection();
+            
+
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
@@ -173,18 +173,44 @@ namespace WB_labb3_API_new_
             // ------- Endpoints för Technology --------
 
             //Post
-            app.MapPost("/api/technologies", async (AppDbContext db, Technology tech) =>
+            /* app.MapPost("/api/technologies", async (AppDbContext db, Technology tech) =>
+             {
+                 if (string.IsNullOrEmpty(tech.ImageUrl))
+                 {
+                     tech.ImageUrl = "images/Default.png"; // standardbild
+                 }
+
+                 db.Technologies.Add(tech);
+
+                 await db.SaveChangesAsync();
+                 return Results.Ok(tech);
+             });
+            */
+
+            // Ursprunglig kod i Program.cs (teknologier)
+            // POST
+            app.MapPost("/api/technologies", async (AppDbContext db, [FromBody] Technology tech) =>
             {
+                // Validera att obligatoriska fält inte är tomma
+                if (string.IsNullOrEmpty(tech.Name) || string.IsNullOrEmpty(tech.SkillLevel))
+                {
+                    return Results.BadRequest("Name och SkillLevel måste anges.");
+                }
+
+                // Sätt en standardbild om ingen bild anges
                 if (string.IsNullOrEmpty(tech.ImageUrl))
                 {
                     tech.ImageUrl = "images/Default.png"; // standardbild
                 }
-                
-                db.Technologies.Add(tech);
 
+                // Logga de inkomna värdena (kan tas bort när du är klar med felsökningen)
+                Console.WriteLine($"POST tech: Name={tech.Name}, YearsOfExperience={tech.YearsOfExperience}, SkillLevel={tech.SkillLevel}, ImageUrl={tech.ImageUrl}");
+
+                db.Technologies.Add(tech);
                 await db.SaveChangesAsync();
                 return Results.Ok(tech);
             });
+
 
             //Get all
             app.MapGet("/api/technologies", async (AppDbContext db) =>
